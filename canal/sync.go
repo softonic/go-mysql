@@ -116,10 +116,12 @@ func (c *Canal) runSyncBinlog() error {
 				return errors.Trace(err)
 			}
 		case *replication.QueryEvent:
-			if string(e.Query) == "FLUSH SLOW LOGS" {
-				return nil
-			}
-			stmts, _, err := c.parser.Parse(string(e.Query), "", "")
+            if string(e.Query) == "FLUSH SLOW LOGS" {
+                stmts := make([]ast.StmtNode, 0)
+                err := nil
+            } else {
+                stmts, _, err := c.parser.Parse(string(e.Query), "", "")
+            }
 			if err != nil {
 				log.Errorf("parse query(%s) err %v", e.Query, err)
 				return errors.Trace(err)
